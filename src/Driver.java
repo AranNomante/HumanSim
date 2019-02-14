@@ -28,6 +28,7 @@ public class Driver {
         System.out.println("Please enter any positive integer to watch the simulation happen");
         System.out.println("Values 2 to 100 are advised more than 100 will require more time");
         System.out.println("Target value 1 is default test number 0 will always succeed");
+        System.out.println("Target value 10612 is the maximum value");
         System.out.println("Enter 0 to exit");
     }
 }
