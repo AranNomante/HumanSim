@@ -27,14 +27,14 @@ class Human {
 
     //skill inheritance chance is 1% objective is to create humans and stop creating them if one has achieved
     //the target skill or a greater skill value in it's life
-    void simulate(int targetFactor) {
+    void simulate(int targetSkill) {
         Human human = new Human("0", 1);
-        while (human.getSkill() < targetFactor) {
+        while (human.getSkill() < targetSkill) {
             human.basicSimulation();
-            if (human.getSkill() < targetFactor) {
+            if (human.getSkill() < targetSkill) {
                 System.out.println(human.getName() + " skill: " + human.getSkill());
-                int newFactor = (Math.random() > 0.99) ? human.getSkill() : 1;
-                human = new Human("" + (Integer.parseInt(human.getName()) + 1), newFactor);
+                int newSkill = (Math.random() > 0.99) ? human.getSkill() : 1;
+                human = new Human("" + (Integer.parseInt(human.getName()) + 1), newSkill);
             }
         }
         System.out.println(human.getName() + " is successful with a skill of: " + human.getSkill());
