@@ -42,9 +42,9 @@ class Human {
     void simulate() {
 
     }
-    //todo human will check it's memory and can move to
+    //todo human will check its memory and can move to
     // South,West,North and East if memory does not point that it will harm it
-    // Also it will not go to spawn points which are dead ends
+    // Also it will not go to spawn points which are dead ends and remember dead end paths
      private void move(){
 
     }
