@@ -4,13 +4,22 @@ public class Driver {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Human test = new Human();
         printInfo();
         while (true) {
             if (scanner.hasNextInt()) {
                 int value = scanner.nextInt();
                 if (value == 1) {
-                    test.simulate();
+                    Human experiment = new Human("0");
+                    experiment.simulate();
+                    int[][] inheritedMem;
+                    int i = 1;
+                    while (!experiment.objectiveCompleted) {
+                        inheritedMem = experiment.getMemory();
+                        experiment = new Human("" + i);
+                        experiment.setMemory(inheritedMem);
+                        experiment.simulate();
+                        i++;
+                    }
                     printInfo();
                 } else if (value == 0) break;
                 else {

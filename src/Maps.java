@@ -1,7 +1,7 @@
 class Maps {
     // 0's represent spaces
     // 1's represent paths
-    // 2's represent dead ends
+    // 2's represent spawn points
     // 3 represents exit
     static int[][] map=new int[][]{
             {0,0,0,0,0,0,0,0,0,2,0},
