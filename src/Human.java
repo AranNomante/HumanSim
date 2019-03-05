@@ -2,20 +2,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 class Human {
+    static String name = "0";
     private static String[] directions = new String[]{"up", "down", "left", "right"};
+    private static int time = 1000;
+    private boolean objectiveCompleted = false;
     private String sex;
-    private String name;
     private boolean isDead;
     private int[][] map;
     private int[] currentLocation;
     private int[][] memory;
-    boolean objectiveCompleted = false;
     private int movablesCount;
+    private AiPanel aiPanel;
 
-    Human(String name) {
-        this.name = name;
+    Human(String name, AiPanel aiPanel, int[][] memory) {
+        Human.name = name;
         this.sex = (Math.random() > 0.5) ? "male" : "female";
         this.map = Maps.map;
+        this.aiPanel = aiPanel;
         //counts movable locations
         for (int[] rows :
                 map) {
@@ -26,11 +29,15 @@ class Human {
         }
         //map is always a rectangular shape
         //humans always believe it can move everywhere on map unless it inherits it's ancestor's memory
-        memory = new int[map.length][map[0].length];
-        for (int[] ints : memory) {
-            for (int i = 0; i < ints.length; i++) {
-                ints[i] = 5;
+        if (memory == null) {
+            this.memory = new int[map.length][map[0].length];
+            for (int[] ints : this.memory) {
+                for (int i = 0; i < ints.length; i++) {
+                    ints[i] = 5;
+                }
             }
+        } else {
+            this.memory = memory;
         }
         currentLocation = new int[1];
         //spawns human at a random point
@@ -43,34 +50,20 @@ class Human {
             }
         }
         currentLocation = spawnPoints.get((int) (Math.random() * spawnPoints.size()));
+        this.memory[currentLocation[0]][currentLocation[1]] = 2;
+        aiPanel.setTiles(this.memory);
         System.out.println(Arrays.toString(currentLocation));
     }
 
+    int[] getCurrentLocation() {
+        return currentLocation;
+    }
 
     int[][] getMemory() {
         return memory;
     }
 
-    void setMemory(int[][] memory) {
-        this.memory = memory;
-    }
 
-    void simulate() {
-        basicSimulation();
-        System.out.println("-------------");
-        System.out.println("Memory of " + name);
-        for (int[] memLoc :
-                memory) {
-            System.out.println(Arrays.toString(memLoc));
-        }
-        System.out.println("-------------");
-        System.out.println("Map");
-        for (int[] mapLoc :
-                map) {
-            System.out.println(Arrays.toString(mapLoc));
-        }
-        System.out.println("-------------");
-    }
     //moves if movable and checks status
     private void move() {
         String selection = directions[(int) (Math.random() * directions.length)];
@@ -95,6 +88,7 @@ class Human {
         }
         healthCheck();
     }
+
     //checks path availability will return true as long as there is a path and it is not marked 0 in the memory
     //todo improve this algorithm to prevent wandering around and make human follow the path that leads to
     // unknown while trying to find 3
@@ -121,6 +115,7 @@ class Human {
         System.out.printf("%s: sex:%s\n"
                 , name, sex);
     }
+
     //checks if stepped on 0 or 3 and else then updates
     private void healthCheck() {
         if (map[currentLocation[0]][currentLocation[1]] == 0) {
@@ -135,25 +130,56 @@ class Human {
         }
     }
 
-    private void basicSimulation() {
+    void basicSimulation() {
+        aiPanel.repaint();
         while (!this.isDead && !this.objectiveCompleted) {
-            this.move();
+            try {
+                Thread.sleep(time);
+                this.move();
+                aiPanel.repaint();
+                if (time > 10) time -= 10;
+                System.out.println("timeToWait:" + time);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("----------------------------");
         if (isDead) {
-            System.out.println(this.name + " is dead");
-            int count=0;
-            for (int[] rows:
-            memory){
+            System.out.println(name + " is dead");
+            int count = 0;
+            for (int[] rows :
+                    memory) {
                 for (int i :
                         rows) {
-                    if (i!=0 && i!=5)count++;
+                    if (i != 0 && i != 5) count++;
                 }
             }
-            int rate=(int)((count/(double) movablesCount)*100);
-            System.out.println("Match rate is: "+rate);
+            int rate = (int) ((count / (double) movablesCount) * 100);
+            System.out.println("Match rate is: " + rate);
+            printHuman();
+            printInfo();
+            aiPanel.setHuman(new Human("" + (Integer.parseInt(name) + 1), aiPanel, this.getMemory()));
+            aiPanel.human.basicSimulation();
+        } else {
+            printHuman();
+            printInfo();
+            Driver.dialogue();
         }
-        this.printHuman();
-        System.out.println("----------------------------");
+    }
+
+    private void printInfo() {
+        System.out.println("-------------");
+        System.out.println("Memory of " + name);
+        for (int[] memLoc :
+                memory) {
+            System.out.println(Arrays.toString(memLoc));
+        }
+        System.out.println("-------------");
+        System.out.println("Map");
+        for (int[] mapLoc :
+                map) {
+            System.out.println(Arrays.toString(mapLoc));
+        }
+        System.out.println("-------------");
     }
 }
